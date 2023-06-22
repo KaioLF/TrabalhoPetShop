@@ -1,4 +1,4 @@
-const Category = require("../models/Category");
+const Category = require("../models/Category"); //testqando
 
 class CategoryController {
   static async register(req, res) {
