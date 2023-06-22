@@ -1,55 +1,67 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const Category = require('./Category');
 
-/* Um produto precisa ter: código, nome, imagem, descrição, preço, categoria (relacionamento), animal (sem relacionameto - “Cachorro”, ‘Gato“, etc), lista de comentários do produto (não precisa de relacionamento). 
-Cada comentário precisa ter texto e nota. 
-A nota geral do produto é a média das notas dos comentários.
- */
+const CommentSchema = new Schema({
+  comment: {
+    type: String,
+    required: true
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 5
+  }
+});
 
-const Product = mongoose.model(
-    'Product',
-    new Schema({
-      id: {
-        type:Number,
-        required: true,
-        unique: true
-      },
-      name: {
-        type: String,
-        required: true,
-      },
-      description: {
-        type: String,
-        required: true,        
-      },
-      price:{
-        type: Number,
-        required: true,
-      },
-      //arrumar
-      category:{
-        type: String,
-        required: true,
-      },
-      animal:{
-        type: String,
-        required: true,
-      },
-      commentsList: [
-        {
-          comment: {
-            type: String,
-            required: true
-          },
-          rating: {
-            type: Number,
-            required: true,
-            min: 0,
-            max: 5
-          }
-        }
-      ]
-    }, {timestamps: true}),
-  );
-  
-  module.exports = Product;
+const ProductSchema = new Schema(
+  {
+    id: {
+      type: Number,
+      required: true,
+      unique: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    image: {
+      type: String,
+      /*required: false*/
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    price: {
+      type: Number,
+      required: true
+    },
+    category: { //testar isso aqui
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true
+    },
+    animal: {
+      type: String,
+      required: true
+    },
+    commentsList: [CommentSchema]
+  },
+  { timestamps: true }
+);
+
+ProductSchema.virtual('generalRating').get(function () { //é através desse 'generalRating' que acessamos a média geral em outras partes do código, basicamente é um atributo que não ao banco de dados, ele é apenas criado virtualmente. //PRECISA DE TESTE
+  if (this.commentsList.length === 0) {
+    return 0;
+  }
+
+  const totalRating = this.commentsList.reduce((sum, comment) => sum + comment.rating, 0);
+  const averageRating = totalRating / this.commentsList.length;
+  return averageRating;
+});
+
+const Product = mongoose.model('Product', ProductSchema);
+
+module.exports = Product;

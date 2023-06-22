@@ -22,7 +22,7 @@ const User = mongoose.model(
       required: true,
     },
     /*image: {
-      type: String,
+      type: String,//String porque é recebida por base64?
       required: true
     },*/
     phone: {
