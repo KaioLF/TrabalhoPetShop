@@ -12,12 +12,10 @@ const orderSchema = new Schema({
   },
   totalPrice: {
     type: Number,
-    required: true
   },
   products: [{
     product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      type: String, // Alterado para String
       required: true
     },
     quantity: {
@@ -26,8 +24,7 @@ const orderSchema = new Schema({
     }
   }],
   customer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String, // Alterado para String
     required: true
   },
   dateTime: {
@@ -44,13 +41,21 @@ const orderSchema = new Schema({
 orderSchema.pre('save', async function (next) {
   const order = this;
 
-  let totalPrice = 0;
-  for (const product of order.products) {
-    const populatedProduct = await order.populate('products.product').execPopulate();
-    totalPrice += populatedProduct.products.product.price * product.quantity;
+  try {
+    const populatedOrder = await Order.findOne({ id: order.id })
+      .populate('products.product')
+      .exec();
+
+    let totalPrice = 0;
+    for (const product of populatedOrder.products) {
+      totalPrice += product.product.price * product.quantity;
+    }
+
+    order.totalPrice = totalPrice;
+  } catch (error) {
+    console.error(error);
   }
 
-  order.totalPrice = totalPrice;
   next();
 });
 

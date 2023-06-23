@@ -7,14 +7,14 @@ const OrderController = require("../controllers/OrderController");//importando o
 
 
 //rotas
-router.post("/orderRegister", OrderController.register);//rota de cadastro da categoria
-router.get("/orders", OrderController.getAll);//rota de listar todos as categorias
-router.get("/:id", OrderController.getOrderById);//rota de listar categoria por id
+router.post("/orderRegister", OrderController.register);//rota de cadastro do pedido
+router.get("/orders", OrderController.getAll);//rota de listar todos os pedidos
+router.get("/:id", OrderController.getOrderById);//rota de listar pedido por id
 
 //TODO getOrdersByUser
-router.get("/user/:name", OrderController.getByUser);//listar pedido por usuário
+router.get("/user/:name", OrderController.getOrderByUser);//listar pedido por usuário
 
-router.put("/:id", OrderController.update);//rota para editar usuário
-router.delete("/:id", OrderController.deleteOrder);//rota para deletar usuário por id
+router.put("/:id", OrderController.update);//rota para editar pedido
+router.delete("/:id", OrderController.deleteOrder);//rota para pedido por id
 
 module.exports = router;
