@@ -12,6 +12,7 @@ router.get("/orders", OrderController.getAll);//rota de listar todos as categori
 router.get("/:id", OrderController.getOrderById);//rota de listar categoria por id
 
 //TODO getOrdersByUser
+router.get("/user/:name", OrderController.getByUser);//listar pedido por usuário
 
 router.put("/:id", OrderController.update);//rota para editar usuário
 router.delete("/:id", OrderController.deleteOrder);//rota para deletar usuário por id

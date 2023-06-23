@@ -35,7 +35,8 @@ const orderSchema = new Schema({
     required: true
   },
   status: {
-    type: Boolean,
+    type: String,
+    enum: ['Aguardando Pagamento', 'Padrão', 'Enviado', 'Cancelado', 'Faturado'],
     required: true
   }
 }, { timestamps: true });

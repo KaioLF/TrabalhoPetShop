@@ -57,6 +57,19 @@ module.exports = class OrderController {
     res.status(200).json({ order });
   }
 
+  static async getByUser(req, res) {
+    const customer = req.params.customer.name;
+
+    const order = await Order.findOne({"customer.name": customer})
+
+    if (!order) {
+      res.status(422).json({ message: "O usuário desse pedido não foi encontrado!" });
+      return;
+    }
+
+    res.status(200).json({ order });
+  } 
+
   static async update(req, res) {
     const { id, totalPrice, products, customer, dateTime, status } = req.body;
 
