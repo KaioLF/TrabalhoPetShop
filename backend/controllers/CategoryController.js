@@ -56,7 +56,7 @@ class CategoryController {
     try {
       const id = req.params.id;
 
-      const category = await Category.findById(id);
+      const category = await Category.findOne({id: id});
 
       if (!category) {
         return res.status(404).json({ message: 'Categoria não encontrada!' });
@@ -73,41 +73,46 @@ class CategoryController {
     try {
       const id = req.params.id;
       const { name, description } = req.body;
-
+  
       // Validations
       if (!name) {
         return res.status(422).json({ message: "O nome da categoria é obrigatório!" });
       }
-
+  
       if (!description) {
         return res.status(422).json({ message: "A descrição da categoria é obrigatória!" });
       }
-
-      const updatedCategory = await Category.findByIdAndUpdate(
-        id,
-        { name, description },
-        { new: true }
-      );
-
-      if (!updatedCategory) {
+  
+      const category = await Category.findOne({ id: id });
+  
+      if (!category) {
         return res.status(404).json({ message: "Categoria não encontrada!" });
       }
-
-      res.status(200).json({ category: updatedCategory });
+  
+      category.name = name;
+      category.description = description;
+  
+      const updatedCategory = await category.save();
+  
+      res.status(200).json({ message: "Categoria atualizada com sucesso!"});
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Erro ao atualizar a categoria!" });
     }
   }
+  
 
   static async deleteCategory(req, res) {
     try {
       const id = req.params.id;
-      const deletedCategory = await Category.findByIdAndRemove(id);
 
-      if (!deletedCategory) {
+      const category = await Category.findOne({id: id});
+
+      if (!category) {
         return res.status(404).json({ message: "Categoria não encontrada!" });
       }
+
+      await Category.deleteOne({id: id});
 
       res.status(200).json({ message: "Categoria excluída com sucesso!" });
     } catch (error) {
