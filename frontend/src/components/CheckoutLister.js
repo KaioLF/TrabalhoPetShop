@@ -1,12 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const CheckoutLister = () => {
-  // Dados fictícios para ilustrar o exemplo
-  const selectedProducts = [
-    { id: 1, name: 'Produto 1', quantity: 2 },
-    { id: 2, name: 'Produto 2', quantity: 1 },
-    { id: 3, name: 'Produto 3', quantity: 3 },
-  ];
+  const [selectedProducts, setSelectedProducts] = useState([]); // Estado para armazenar os produtos selecionados
 
   const customerAddress = 'Endereço do cliente';
   const customerCardInfo = 'Informações do cartão do cliente';
@@ -15,6 +10,21 @@ const CheckoutLister = () => {
     // Lógica para finalizar o pedido
     console.log('Pedido finalizado');
   };
+
+  // Função para carregar os produtos selecionados (pode ser uma chamada de API ou qualquer outra forma de obter os dados do pedido)
+  const loadSelectedProducts = async () => {
+    // Simulação de chamada de API para obter os produtos cadastrados no pedido
+    const response = await fetch('http://localhost:3000/orders/orderRegister');
+    const data = await response.json();
+
+    // Atualiza o estado dos produtos selecionados com os dados obtidos
+    setSelectedProducts(data.selectedProducts);
+  };
+
+  // Carrega os produtos selecionados ao renderizar o componente
+  useEffect(() => {
+    loadSelectedProducts();
+  }, []);
 
   return (
     <div style={styles.container}>
