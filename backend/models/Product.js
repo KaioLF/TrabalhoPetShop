@@ -38,9 +38,8 @@ const ProductSchema = new Schema(
       type: Number,
       required: true
     },
-    category: { //testar isso aqui
-      type: Schema.Types.ObjectId,
-      ref: 'Category',
+    category: {
+      type: String,
       required: true
     },
     animal: {

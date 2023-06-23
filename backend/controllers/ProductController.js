@@ -1,4 +1,6 @@
 const Product = require("../models/Product");
+const Category = require('../models/Category');
+
 
 module.exports = class ProductController {
   static async register(req, res) {
@@ -78,69 +80,79 @@ module.exports = class ProductController {
   }
 
   static async getProductById(req, res) {
-    const id = req.params.id;
+    try {
+      const id = req.params.id;
 
-    const product = await Product.findById(id);
+      const product = await Product.findOne({id: id});
 
-    if (!product) {
-      res.status(422).json({ message: "Produto não encontrado!" });
-      return;
+      if (!product) {
+        return res.status(404).json({ message: 'Produto não encontrado!' });
+      }
+
+      res.status(200).json({ product });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Erro ao obter produto por ID" });
     }
-
-    res.status(200).json({ user });
   }
 
   static async update(req, res) {
-    const product = req.body;
-    const name = req.body.name;
-    const description = req.body.description;
-    const price = req.body.price;
-    const category = req.body.category;
-    const animal = req.body.animal;
-    const commentsList = req.body.animal;
-
-    // validations
+    const id = req.params.id;
+    const { name, description, price, categoryName, animal } = req.body;
+  
+    // Validations
     if (!name) {
-      res.status(422).json({ message: "O nome do produto é obrigatório!" });
-      return;
+      return res.status(422).json({ message: "O nome do produto é obrigatório!" });
     }
-
-    product.name = name;
-
+  
     if (!description) {
-      res.status(422).json({ message: "A descrição do produto é obrigatória!" });
-      return;
+      return res.status(422).json({ message: "A descrição do produto é obrigatória!" });
     }
-
-    product.description = description;
-
+  
     if (!price) {
-      res.status(422).json({ message: "O preço é obrigatório!" });
-      return;
+      return res.status(422).json({ message: "O preço é obrigatório!" });
     }
-
-    product.price = price;
-
-    if (!category){
-        res.status(422).json({ message: "A categoria do produto é obrigatória!" });
-        return;
+  
+    if (!categoryName) {
+      return res.status(422).json({ message: "A categoria do produto é obrigatória!" });
     }
-
-    product.category = category;
-
-    if (!animal){
-        res.status(422).json({ message: "O animal é obrigatório!" });
-        return;
+  
+    if (!animal) {
+      return res.status(422).json({ message: "O animal é obrigatório!" });
     }
-    
-    product.animal = animal;
-
-    /*if (!commentsList){
-        res.status(422).json({ message: "A categoria do produto é obrigatória!" });
-        return;
+  
+    try {
+      // Find the product by ID
+      const product = await Product.findOne({ id });
+  
+      if (!product) {
+        return res.status(404).json({ message: "Produto não encontrado!" });
+      }
+  
+      // Find the category by name
+      const categoryObj = await Category.findOne({ name: categoryName });
+  
+      if (!categoryObj) {
+        return res.status(404).json({ message: "Categoria não encontrada!" });
+      }
+  
+      // Perform the update
+      product.name = name;
+      product.description = description;
+      product.price = price;
+      product.category = categoryObj.id; // Use o ID personalizado da categoria
+  
+      const updatedProduct = await product.save();
+  
+      res.status(200).json({ product: updatedProduct, message: "Produto atualizado com sucesso!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Erro ao atualizar o produto!" });
     }
-    product.commentsList = commentsList;*/
   }
+  
+  
+  
 
   static async deleteProduct(req, res) {
     try {
