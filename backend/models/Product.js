@@ -51,7 +51,7 @@ const ProductSchema = new Schema(
   { timestamps: true }
 );
 
-ProductSchema.virtual('generalRating').get(function () { //é através desse 'generalRating' que acessamos a média geral em outras partes do código, basicamente é um atributo que não ao banco de dados, ele é apenas criado virtualmente. //PRECISA DE TESTE
+ProductSchema.virtual('generalRating').get(function () {
   if (this.commentsList.length === 0) {
     return 0;
   }
@@ -60,6 +60,12 @@ ProductSchema.virtual('generalRating').get(function () { //é através desse 'ge
   const averageRating = totalRating / this.commentsList.length;
   return averageRating;
 });
+
+ProductSchema.methods.toJSON = function() {
+  const product = this.toObject();
+  product.generalRating = this.generalRating;
+  return product;
+};
 
 const Product = mongoose.model('Product', ProductSchema);
 
